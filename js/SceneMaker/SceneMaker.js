@@ -348,6 +348,7 @@ function SceneMaker(params) {
 		this.clearScene();
 		mainMC = typeof(cell) !== typeof(true) ? cell : createMainObject();
 		
+		prepareJSON( cell );
 		this.reset();
 	};
 	
