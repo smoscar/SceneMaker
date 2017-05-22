@@ -45,9 +45,8 @@ function SceneMaker(params) {
 	};
 	
 	SceneMaker.prototype.addCellToScene = function(cell, callback) {
-		var _this = this;
-		if (typeof(cell) == typeof('')) {
-			AJAX_JSON_Req( cell, function(jsonObject){
+		var _this = this,
+			addObjectToScene = function(jsonObject){
 				cells.push({
 					"name": cell,
 					"orig": JSON.parse(JSON.stringify(jsonObject))
@@ -61,7 +60,12 @@ function SceneMaker(params) {
 					_this.svg.mc._animate();
 					callback(_this.svg.resourceManager.m_data);
 				}
-			});
+			};
+		if (typeof(cell) == typeof('')) {
+			AJAX_JSON_Req( cell, addObjectToScene);
+		}
+		else {
+			addObjectToScene( cell );
 		}
 	};
 	
@@ -345,11 +349,11 @@ function SceneMaker(params) {
 	};
 	
 	SceneMaker.prototype.setNewScene = function( cell ) {
+		this.svg.stop();
 		this.clearScene();
-		mainMC = typeof(cell) !== typeof(true) ? cell : createMainObject();
+		var jsonObject = typeof(cell) !== typeof(true) ? cell : createMainObject();
 		
-		prepareJSON( cell );
-		this.reset();
+		this.addCellToScene( jsonObject );
 	};
 	
 	function createMainObject() {
