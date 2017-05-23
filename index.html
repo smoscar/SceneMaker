@@ -407,7 +407,7 @@ var I18N = {},
 				'<header>',
 					'<div class="header-left">',
 						'<ul class="tab">',
-							'<li class="icon-cells current" data-id="cells"></li>', // OSCACA - new module for cells
+							'<li class="icon-cells current" data-id="cells"></li>', // OSCAR - new module for cells
 							'<li class="icon-assets" data-id="assets"></li>', // OSCAR - new module for assets
 							/*'<li class="icon-artboards current" data-id="artboards"></li>',
 							'<li class="icon-slices" data-id="slices"></li>',
@@ -429,7 +429,7 @@ var I18N = {},
 				'</header>',
 				'<main>',
 					'<aside class="navbar on">',
-						'<section id="cells"></section>', // OSCACA - new module for cells
+						'<section id="cells"></section>', // OSCAR - new module for cells
 						'<section id="assets" style="display: none;"></section>', // OSCAR - new module for assets
 						/*'<section id="artboards"></section>',
 						'<section id="slices" style="display: none;"><div class="empty">' + _('No slices added!') + '</div></section>',
@@ -460,7 +460,7 @@ var I18N = {},
 			].join(''));
 			this.zoom();
 			this.unit();
-			this.cells(); //OSCACA
+			this.cells(); //OSCAR
 			this.assets(); //OSCAR
 			this.artboards();
 			this.slices();
@@ -630,7 +630,7 @@ var I18N = {},
 				);
 			$('#unit').html(unitHtml.join(''));
 		},
-		cells: function( shouldActivate ){ //OSCACA - to control the assets list
+		cells: function( shouldActivate ){ //OSCAR - to control the assets list
 			var self = this,
 				cellListHTML = [];
 			
@@ -1525,7 +1525,7 @@ var I18N = {},
 				}
 			} : null;
 		},
-		loadExternalAsset: function(asset) { //OSCACA - to load external json objects
+		loadExternalAsset: function(asset) { //OSCAR - to load external json objects
 			var self = this;
 			
 			self.scene.addCellToScene(asset.assetPath, function(mainObject){ //TODO - add loading feedback
@@ -1552,7 +1552,7 @@ var I18N = {},
 				$('body').trigger('click');
 			});
 		},
-		loadFromCell: function(cell) { //OSCACA - to load elements from cells
+		loadFromCell: function(cell) { //OSCAR - to load elements from cells
 			var sceneLayers = cell.layers.splice( 1, ( cell.layers.length - 1 ) );
 			
 			this.loadExternalAsset({
@@ -1678,7 +1678,7 @@ var I18N = {},
 					var jQThis = $(this);
 					jQThis.css({left: 0, top: 0, width: "100%", height: "100%"});
 				})
-				.on('dragstart', '.rearranging .cell .container', function( event ){ //OSCACA - to handle the dragstart event when arranging cells
+				.on('dragstart', '.rearranging .cell .container', function( event ){ //OSCAR - to handle the dragstart event when arranging cells
 					
 					event.originalEvent.dataTransfer.effectAllowed = 'move';
 					event.originalEvent.dataTransfer.setData('Text', this.textContent);
@@ -1686,7 +1686,7 @@ var I18N = {},
 					$("#cells").data('dragEl', event.currentTarget);
 					
 				})
-				.on('dragover',  '.rearranging .cell .container[draggable]', function( event ){ //OSCACA - to handle the dragover event
+				.on('dragover',  '.rearranging .cell .container[draggable]', function( event ){ //OSCAR - to handle the dragover event
 					
 					event.preventDefault();
 					event.originalEvent.dataTransfer.dropEffect = 'move';
@@ -1694,7 +1694,7 @@ var I18N = {},
 					$(".dragOver").removeClass('dragOver');
 					$(this).addClass('dragOver');
 				})
-				.on("dragend", ".rearranging .cell .container", function(event){  //OSCACA - to handle the dragend event
+				.on("dragend", ".rearranging .cell .container", function(event){  //OSCAR - to handle the dragend event
 					
 					var cellsList = $( '.rearranging .cell .container[draggable]' ),
 						droppedIndex = cellsList.index( this ),
@@ -1846,7 +1846,7 @@ var I18N = {},
 					$('#notes').fadeOut('fast');
 				}
 			});
-			$('#cells') // OSCACA - handle the clicks
+			$('#cells') // OSCAR - handle the clicks
 				.on('click', '.cell', function( event ){
 					if(self.cellIndex == self.getIndex(this) || ( $('#cells').is('.rearranging') )) return;
 					
@@ -2218,7 +2218,7 @@ var I18N = {},
 							
 								self.current.layers.splice( self.selectedIndex, 1 );
 								
-								self.cells(); //OSCACA - to remove it from the cells assets lists
+								self.cells(); //OSCAR - to remove it from the cells assets lists
 								self.layers();
 								$('body').trigger('click');
 							
@@ -2276,8 +2276,8 @@ var I18N = {},
 				codeType: 'css'
 			};
 		this.artboardIndex = (!isNaN(path.artboard))? path.artboard: 0;
-		this.cellIndex = (!isNaN(path.cell) && typeof(this.project.cells[path.cell])!=="undefined")? path.cell: 0; //OSCACA - contains the index of the current cell
-		this.current = this.project.cells[this.cellIndex]; //OSCACA this.project.screen; //OSCAR this.project.artboards[this.artboardIndex];
+		this.cellIndex = (!isNaN(path.cell) && typeof(this.project.cells[path.cell])!=="undefined")? path.cell: 0; //OSCAR - contains the index of the current cell
+		this.current = this.project.cells[this.cellIndex]; //OSCAR this.project.screen; //OSCAR this.project.artboards[this.artboardIndex];
 		var proportion = $(document).height() / this.current.height;
 		if (proportion >= .8) {
 			this.configs.zoom = 1;
@@ -2306,7 +2306,7 @@ var I18N = {},
 				onend: $.proxy(this.handleDragEnd, this)
 			}
 		});
-		if ( typeof( this.current.layers[0].svgJSON ) == "undefined" && typeof( this.current.assetPath ) !== "undefined" ) { // OSCACA - to load the first asset if there is one
+		if ( typeof( this.current.layers[0].svgJSON ) == "undefined" && typeof( this.current.assetPath ) !== "undefined" ) { // OSCAR - to load the first asset if there is one
 			this.loadFromCell( this.current );
 		}
 		return this;
