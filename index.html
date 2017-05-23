@@ -1675,37 +1675,35 @@ var I18N = {},
 					var jQThis = $(this);
 					jQThis.css({left: 0, top: 0, width: "100%", height: "100%"});
 				})
-				.on('dragstart', '.rearranging .cell .container', function( event ){ //OSCACA - to arrange the cells 
+				.on('dragstart', '.rearranging .cell .container', function( event ){ //OSCACA - to handle the dragstart event when arranging cells
 					
 					event.originalEvent.dataTransfer.effectAllowed = 'move';
 					event.originalEvent.dataTransfer.setData('Text', this.textContent);
 					
 					$("#cells").data('dragEl', event.currentTarget);
 					
-					/*var jQThis = $(this),
-						offset = jQThis.offset();
-					jQThis.css({width: "auto", height: "auto"});
-					var left = event.originalEvent.pageX - offset.left - jQThis.width() / 2,
-						top = event.originalEvent.pageY - offset.top - jQThis.height() / 2;
-					jQThis.css({top: top});*/
 				})
-				.on('dragover',  '.rearranging .cell .container[draggable]', function( event ){ //OSCACA - to arrange the cells 
+				.on('dragover',  '.rearranging .cell .container[draggable]', function( event ){ //OSCACA - to handle the dragover event
 					
 					event.preventDefault();
 					event.originalEvent.dataTransfer.dropEffect = 'move';
 
-					//if (this != $("#cells").data('dragEl')){
-						$(".dragOver").removeClass('dragOver');
-						$(this).addClass('dragOver');
-					//}
+					$(".dragOver").removeClass('dragOver');
+					$(this).addClass('dragOver');
 				})
-				.on("dragend", ".rearranging .cell .container", function(event){  //OSCACA - to arrange the cells 
+				.on("dragend", ".rearranging .cell .container", function(event){  //OSCACA - to handle the dragend event
+					
+					var cellsList = $( '.rearranging .cell .container[draggable]' ),
+						droppedIndex = cellsList.index( this ),
+						droppedCell = self.project.cells.splice( droppedIndex, 1 ),
+						insertIndex = cellsList.index( $(".dragOver") );
+					
+					insertIndex -= ( insertIndex > droppedIndex ? 1 : 0 );
+					self.project.cells.splice( insertIndex, 0, droppedCell[0] );
 					
 					$( $("#cells").data('dragEl') ).parent().insertBefore( $(".dragOver").parent() );
 					$(".dragOver").removeClass('dragOver');
-					
-					//var jQThis = $(this);
-					//jQThis.css({left: 0, top: 0, width: "100%", height: "100%"});
+
 				});
 			// zoom
 			$('#zoom')
@@ -1989,7 +1987,9 @@ var I18N = {},
 					 $('#cell-add h3').html( _('Add new Cell') );
 					 $("#cells .cell:not(.accept) .container").removeAttr("draggable");
 					 setTimeout(function(){
-					 	$('#cells .active .asset-list').slideDown();
+					 	$('#cells .active .asset-list').slideDown(400, function( e ){
+					 		self.cells();
+					 	});
 					 }, 400);
 				});
 			$('#assets') //OSCAR - to control the selection of new assets
