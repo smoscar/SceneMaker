@@ -349,6 +349,7 @@ function SceneMaker(params) {
 		cells = [];
 		pointer = 0;
 		initial_pos = undefined;
+		this.svg.reset();
 		this.svg = {"stop":function(){},"mc":{"el":{"clear":function(){}}}}
 	};
 	
