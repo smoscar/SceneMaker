@@ -45,16 +45,17 @@ header .header-left{display:flex;}
 .unit-box ul{position:absolute;margin:1px 0 0 240px;padding:0;list-style:none;background:#0F0F0F;width:240px;height:calc(100vh - 61px);overflow:auto;display:block;transition:all .15s ease;z-index:2;}
 .unit-box:focus h3{color:#3A3A3A;display:block;}
 .unit-box:focus ul{margin:1px 0 0;}
-.unit-box .sub-title,.unit-box label{display:flex;padding:14px 20px;}
-.unit-box label{cursor:pointer;}
-.unit-box li:hover label{color:#FFF;}
-.page-list label span,.unit-box label span{flex:1;}
-.page-list input,.unit-box input{position:absolute;visibility:hidden;}
-.page-list span:before,.unit-box span:before{float:right;display:block;content:"";width:16px;height:16px;}
-.page-list input:checked+span:before,.page-list label:hover span:before,.unit-box input:checked+span:before,.unit-box label:hover span:before{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAADICAMAAAAp4rTzAAAAaVBMVEUAAACYm5yYm500hPaDoMKYucs0hfaYm52Znp6bnZ01hfeYnJ2Zm540hvc8iv81hPWYm52YnJ2ZnJ01h/g2ifmcnJw4h/o1hfY1hfU1hfY1hfU1hfY0hfaZnJ41hfY2h/aYnJw0hfU0hPbpk+wAAAAAInRSTlMAo5LmCAP0nDIVeHFNSg6diGVZNCciGtvSw7arj3xpVkSETvQOmQAAAPlJREFUeNrt1MtuwjAQheFxYhNyIUBCwqXcOu//kHWMl6wqRlWl/1tYs5ojzZEsAH7rUZYbMXZX1VJsfat5SNhqtDI9l/+yyuibps/TOd1qlM+7qB7nZZhPKeMgBlZ58+Go0WkWC6+ux7HU6NyLidz2ankvXoyEq2bbIHYaTa5i6q5RI8Y2ZfkQAAAAAAAAAAAAAAAA4K11UazF2NM5V4itwZmHhL2LKtNzhdYqw3edz9Mt3WqSz2ud29XLUO9SRi0Gqry5LpxLeRZeXU9Tyrh5MZHbrpa39WIkDC7bB7HTuWQQU08XdfLOP/sVAQAAAAAAAAAAAAD4Yz84hg8qlGTZeQAAAABJRU5ErkJggg==);background-size:50px 100px;}
-.page-list label:hover span:before,.unit-box label:hover span:before{background-position:0 -50px;}
-.page-list input:checked+span:before,.unit-box input:checked+span:before{background-position:0 0;}
+.unit-box .sub-title,.unit-box label,.action-list label.action{display:flex;padding:14px 20px;}
+.unit-box label,.action-list label.action{cursor:pointer;}
+.unit-box li:hover label,.action-list label.action:hover{color:#FFF;}
+.page-list label span,.unit-box label span,.action-list label span{flex:1;}
+.page-list input,.unit-box input,.action-list input[type=radio]{position:absolute;visibility:hidden;}
+.page-list span:before,.unit-box span:before,.action-list span:before{float:right;display:block;content:"";width:16px;height:16px;}
+.page-list input:checked+span:before,.page-list label:hover span:before,.unit-box input:checked+span:before,.unit-box label:hover span:before,.action-list input:checked+span:before,.action-list label:hover span:before{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAADICAMAAAAp4rTzAAAAaVBMVEUAAACYm5yYm500hPaDoMKYucs0hfaYm52Znp6bnZ01hfeYnJ2Zm540hvc8iv81hPWYm52YnJ2ZnJ01h/g2ifmcnJw4h/o1hfY1hfU1hfY1hfU1hfY0hfaZnJ41hfY2h/aYnJw0hfU0hPbpk+wAAAAAInRSTlMAo5LmCAP0nDIVeHFNSg6diGVZNCciGtvSw7arj3xpVkSETvQOmQAAAPlJREFUeNrt1MtuwjAQheFxYhNyIUBCwqXcOu//kHWMl6wqRlWl/1tYs5ojzZEsAH7rUZYbMXZX1VJsfat5SNhqtDI9l/+yyuibps/TOd1qlM+7qB7nZZhPKeMgBlZ58+Go0WkWC6+ux7HU6NyLidz2ankvXoyEq2bbIHYaTa5i6q5RI8Y2ZfkQAAAAAAAAAAAAAAAA4K11UazF2NM5V4itwZmHhL2LKtNzhdYqw3edz9Mt3WqSz2ud29XLUO9SRi0Gqry5LpxLeRZeXU9Tyrh5MZHbrpa39WIkDC7bB7HTuWQQU08XdfLOP/sVAQAAAAAAAAAAAAD4Yz84hg8qlGTZeQAAAABJRU5ErkJggg==);background-size:50px 100px;}
+.page-list label:hover span:before,.unit-box label:hover span:before,.action-list label:hover span{background-position:0 -50px;}
+.page-list input:checked+span:before,.unit-box input:checked+span:before.action-list input:checked+span:before{background-position:0 0;}
 .unit-box .sub-title{font-size:12px;background:#000;color:#3A3A3A;}
+.inspector .action-list .item[data-label]:before{padding-left:18px;width:52px;}
 main{position:relative;height:calc(100vh - 60px);}
 .inspector,.navbar{position:absolute;top:0;bottom:0;display:flex;width:240px;background:#333644;z-index:5;}
 .inspector{transition:all .15s ease;right:-240px;display:block;}
@@ -155,6 +156,7 @@ header .tab li.current:after{bottom:0px;}
 .inspector .item label:first-child{padding:0 4px 0 0;}
 .inspector .item label:last-child{padding:0 0 0 4px;}
 .inspector .item label:only-child{padding:0;}
+.inspector .action-list .item label.action{padding:6px 2px 6px 18px;max-width:208px;position:relative;overflow:hidden;}
 .inspector .item label[data-label]:after{content:attr(data-label);font-size:10px;text-align:center;display:block;margin:2px 0 0;}
 .inspector input,.inspector textarea,.navbar input{padding:3px 4px;width:100%;background:rgba(255,255,255,.05);border-radius:2px;border:0;line-height:18px;height:24px;font-size:12px;color:#FFF;text-align:center;outline:0;resize:none;}
 .inspector textarea{min-width:100%;height:auto;text-align:left;}
@@ -163,6 +165,7 @@ header .tab li.current:after{bottom:0px;}
 .context .colors{margin:0 0 8px;}
 .context .colors:last-child,.context .items-group:last-child{margin:0;}
 .context .items-group{margin:0 0 24px;}
+.context .items-group.action-list{margin-top:16px;}
 .inspector .color{display:block;}
 .inspector .color[data-name]:after{content:attr(data-name);font-size:10px;text-align:center;padding:0 0 0 24px;display:block;margin:2px 0 0;}
 .inspector .color label,.inspector .color label em,.inspector .color label em i{position:absolute;display:block;width:24px;height:24px;padding:0;}
@@ -1244,19 +1247,33 @@ var I18N = {},
 				});
 				html.push(this.propertyType('SHADOWS', shadows.join('')));
 			}
-			// SVG CODE OSCAR - to show the SVG JSON object code
+			// ANIMATION ACTIONS OSCACA - to show the SVG JSON object code
 			if (layerData.svgJSON && layerData.svgJSON.length > 0) {
 				var output = [
-					'<div id="json-panel" class="code-item item select">',
-					'<label><textarea id="svgJSON" rows="' + (layerData.svgJSON.length + 1) + '" readonly="readonly">Loading...</textarea></label>',
-					'</div>'
+						'<div class="item">',
+							'<div class="item" data-label="' +_('Enable') + ':">',
+								'<div class="slidebox"><input id="enable-actions" type="checkbox" name="enable-actions"><label for="enable-actions"></label></div>',
+							'</div>',
+						'</div>',
+						'<div class="action-list items-group" style="display:none">',
+							'<h4>' +_('When animation ends') + '</h4>',
+							'<div class="item" data-label="' +_('After') + ':">',
+								'<label data-label="' +_('Cycles') + '"><input id="actions-cycles" type="text" class="item-number-editable" value="1"></label>',
+								'<label></label>',
+							'</div>',
+							'<div class="item">',
+								'<label class="action"><input type="radio" name="page" value="all" checked="checked"><span>Repeat the animation</span></label>',
+							'</div>',
+							'<div class="item">',
+								'<label class="action"><input type="radio" name="page" value="16337C62-3CA4-4665-A407-A9565453CC0E"><span>Stop the animation</span></label>',
+							'</div>',
+							'<div class="item">',
+								'<label class="action"><input type="radio" name="page" value="16337C62-3CA4-4665-A407-A9565453CC01"><span>Go to the next cell</span></label>',
+							'</div>',
+						'</div>',
 				].join('');
 				
-				setTimeout(function(){
-					$("#json-panel #svgJSON").html( JSON.stringify( layerData.svgJSON[0] ) );
-				}, 300);
-				
-				html.push(this.propertyType('CODE EXPORT', [ output ].join(''), true));
+				html.push(this.propertyType('CELL ACTIONS', [ output ].join('')));
 			}
 			// CODE TEMPLATE
 			if(layerData.css && layerData.css.length > 0){
@@ -1530,7 +1547,8 @@ var I18N = {},
 			
 			self.scene.addCellToScene(asset.assetPath, function(mainObject){ //TODO - add loading feedback
 				self.current.layers[0].svgJSON = [mainObject];
-						
+				self.current.layers[0].actions = self.scene.getTimelineActions(); //OSCACA - to load the scene actions
+
 				$(asset.layers).each(function(i){
 					layer = $.extend( JSON.parse( JSON.stringify( this ) ), {"objectID":self.createGUID(), "classes":["svg"]});
 					self.current.layers.push(layer);
@@ -2224,6 +2242,14 @@ var I18N = {},
 							
 							});
 						});
+					}
+				})
+				.on('change', '#enable-actions', function(e){ //OSCACA - to toggle the actions lists
+					if( this.checked ){
+						$('.action-list').slideDown();
+					}
+					else{
+						$('.action-list').slideUp();
 					}
 				});
 				

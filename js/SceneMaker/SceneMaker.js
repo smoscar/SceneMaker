@@ -98,6 +98,10 @@ function SceneMaker(params) {
 		}
 	};
 	
+	SceneMaker.prototype.getTimelineActions = function() {
+		return [];
+	};
+	
 	SceneMaker.prototype.getObjectColors = function(id, first) {
 		var movieClip = typeof(id) == typeof("") || typeof(id) == typeof(0) ? getMovieClipById(id) : id,
 			chars = {};
