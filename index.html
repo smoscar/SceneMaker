@@ -1250,13 +1250,16 @@ var I18N = {},
 			// ANIMATION ACTIONS OSCACA - to show the SVG JSON object code
 			if (layerData.svgJSON && layerData.svgJSON.length > 0) {
 				var actions = {},
-					output = [];
+					output = [],
+					defaultIt = true,
+					actionIndex;
 				
 				$(layerData.actions).each(function(n){
-					var arrayCopy = JSON.parse( JSON.stringify(this) ),
-						actionIndex = arrayCopy.splice(0,1)[0];
+					var arrayCopy = JSON.parse( JSON.stringify(this) );
+					actionIndex = arrayCopy.splice(0,1)[0];
 						
 					actions[actionIndex] = arrayCopy;
+					defaultIt = false;
 				});
 				
 				output.push(
@@ -1265,20 +1268,20 @@ var I18N = {},
 								'<div class="slidebox"><input id="enable-actions" type="checkbox" name="enable-actions"' + (layerData.actions.length > 0 ? ' checked="checked"' : '') + '><label for="enable-actions"></label></div>',
 							'</div>',
 						'</div>',
-						'<div class="action-list items-group"' + (typeof(actions[0]) == "undefined" ? ' style="display:none"' : '') + '>',
+						'<div class="action-list items-group"' + (typeof(actions[actionIndex]) == "undefined" ? ' style="display:none"' : '') + '>',
 							'<h4>' +_('When animation ends') + '</h4>',
 							'<div class="item" data-label="' +_('After') + ':">',
-								'<label data-label="' +_('Cycles') + '"><input id="actions-cycles" type="text" class="item-number-editable" value="' + ( typeof(actions[0]) != "undefined" ? actions[0][0] : 1 ) + '"></label>',
-								'<label data-label="' +_('Seconds') + '"><input id="actions-seconds" type="text" class="item-number-editable" value="' + ( typeof(actions[0]) != "undefined" ? self.convertCyclesToSeconds( actions[0][0] ) : self.convertCyclesToSeconds( 1 ) ) + '"></label>',
+								'<label data-label="' +_('Cycles') + '"><input id="actions-cycles" type="text" class="item-number-editable" value="' + ( typeof(actions[actionIndex]) != "undefined" ? actions[actionIndex][0] : 1 ) + '"></label>',
+								'<label data-label="' +_('Seconds') + '"><input id="actions-seconds" type="text" class="item-number-editable" value="' + ( typeof(actions[actionIndex]) != "undefined" ? self.convertCyclesToSeconds( actions[actionIndex][0] ) : self.convertCyclesToSeconds( 1 ) ) + '"></label>',
 							'</div>',
 							'<div class="item">',
-								'<label class="action"><input type="radio" name="endaction" value="0"' + ( typeof(actions[0]) != "undefined" && actions[0][1] == 0 ? ' checked="checked"' : '' ) + '><span>Repeat the animation</span></label>',
+								'<label class="action"><input type="radio" name="endaction" value="0"' + ( defaultIt || ( typeof(actions[actionIndex]) != "undefined" && actions[actionIndex][1] == 0 ) ? ' checked="checked"' : '' ) + '><span>Repeat the animation</span></label>',
 							'</div>',
 							'<div class="item">',
-								'<label class="action"><input type="radio" name="endaction" value="1"' + ( typeof(actions[0]) != "undefined" && actions[0][1] == 1 ? ' checked="checked"' : '' ) + '><span>Stop the animation</span></label>',
+								'<label class="action"><input type="radio" name="endaction" value="1"' + ( typeof(actions[actionIndex]) != "undefined" && actions[actionIndex][1] == 1 ? ' checked="checked"' : '' ) + '><span>Stop the animation</span></label>',
 							'</div>',
 							'<div class="item">',
-								'<label class="action"><input type="radio" name="endaction" value="2"' + ( typeof(actions[0]) != "undefined" && actions[0][1] == 2 ? ' checked="checked"' : '' ) + '><span>Go to the next cell</span></label>',
+								'<label class="action"><input type="radio" name="endaction" value="2"' + ( typeof(actions[actionIndex]) != "undefined" && actions[actionIndex][1] == 2 ? ' checked="checked"' : '' ) + '><span>Go to the next cell</span></label>',
 							'</div>',
 						'</div>',
 				);
@@ -1608,7 +1611,7 @@ var I18N = {},
 			return Math.ceil( ( seconds * this.current.fps ) / totalFrames );
 		},
 		updateSceneActions: function() { //OSCACA - function that updates the scene's actions
-			this.scene.setTimelineActions( ["0", $('#actions-cycles').val(), $('.action-list input[name="endaction"]:checked').val() ] );
+			this.scene.setTimelineActions( [(this.cellIndex+""), $('#actions-cycles').val(), $('.action-list input[name="endaction"]:checked').val() ] );
 			
 			this.current.layers[0].actions = this.scene.getTimelineActions();
 		},

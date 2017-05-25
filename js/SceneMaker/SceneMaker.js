@@ -155,7 +155,7 @@ function SceneMaker(params) {
 					script = "/*CELL-ACTIONS-"+scriptParams+"*/ console.log('SHOULD STOP EVERYTHING');";
 					break;
 				case "2":
-					script = "/*CELL-ACTIONS-"+scriptParams+"*/ if (typeof window.slideCellCount == 'undefined'){window.slideCellCount = 1;} else if ( window.slideCellCount == "+ actionsParams[1] +" ) { if (typeof slidedeck !== 'undefined'){ slidedeck.nextSlide(); } window.slideCellCount = 0;}; window.slideCellCount++;";
+					script = "/*CELL-ACTIONS-"+scriptParams+"*/ if (typeof window.slideCellCount == 'undefined'){window.slideCellCount = 1;} else if ( window.slideCellCount == "+ actionsParams[1] +" ) { if (typeof slidedeck !== 'undefined'){ slidedeck.nextSlide(); } window.slideCellCount = 0;}; if (typeof slidedeck !== 'undefined' && slidedeck.curSlide_ == "+ actionsParams[0] +" ) {window.slideCellCount++;}";
 					break;
 			}
 			reg = RegExp("\\/\\*CELL-ACTIONS-" + actionsParams[0] + "[^\\*]+\\*\\/", "g");
@@ -192,7 +192,7 @@ function SceneMaker(params) {
                 "scriptId": scriptID+""
             })
             
-            if ( typeof( mainTimeline.Frame[1] ) !== "undefined" ) {
+            if ( typeof( mainTimeline.Frame[1] ) == "undefined" ) {
             	mainTimeline.Frame[1] = {"Command": [], "num": "1"};
             }
             
