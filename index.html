@@ -1247,7 +1247,7 @@ var I18N = {},
 				});
 				html.push(this.propertyType('SHADOWS', shadows.join('')));
 			}
-			// ANIMATION ACTIONS OSCACA - to show the SVG JSON object code
+			// ANIMATION ACTIONS OSCAR - to show the SVG JSON object code
 			if (layerData.svgJSON && layerData.svgJSON.length > 0) {
 				var actions = {},
 					output = [],
@@ -1560,7 +1560,7 @@ var I18N = {},
 			
 			self.scene.addCellToScene(asset.assetPath, function(mainObject){ //TODO - add loading feedback
 				self.current.layers[0].svgJSON = [mainObject];
-				self.current.layers[0].actions = self.scene.getTimelineActions(); //OSCACA - to load the scene actions
+				self.current.layers[0].actions = self.scene.getTimelineActions(); //OSCAR - to load the scene actions
 
 				$(asset.layers).each(function(i){
 					layer = $.extend( JSON.parse( JSON.stringify( this ) ), {"objectID":self.createGUID(), "classes":["svg"]});
@@ -1600,17 +1600,17 @@ var I18N = {},
 			}
 			return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 		},
-		convertCyclesToSeconds: function( cycles ) { //OSCACA - to convert number of cycles to approx seconds
+		convertCyclesToSeconds: function( cycles ) { //OSCAR - to convert number of cycles to approx seconds
 			var totalFrames = parseInt( this.scene.svg.mc.m_frameCount ) * cycles;
 			
 			return Math.floor( totalFrames / this.current.fps * 10 ) / 10;
 		},
-		convertSecondsToCycles: function( seconds ) { //OSCACA - to convert number of cycles to approx seconds
+		convertSecondsToCycles: function( seconds ) { //OSCAR - to convert number of cycles to approx seconds
 			var totalFrames = parseInt( this.scene.svg.mc.m_frameCount );
 			
 			return Math.ceil( ( seconds * this.current.fps ) / totalFrames );
 		},
-		updateSceneActions: function() { //OSCACA - function that updates the scene's actions
+		updateSceneActions: function() { //OSCAR - function that updates the scene's actions
 			this.scene.setTimelineActions( [(this.cellIndex+""), $('#actions-cycles').val(), $('.action-list input[name="endaction"]:checked').val() ] );
 			
 			this.current.layers[0].actions = this.scene.getTimelineActions();
@@ -2272,7 +2272,7 @@ var I18N = {},
 						});
 					}
 				})
-				.on('change', '#enable-actions', function(e){ //OSCACA - to toggle the actions lists
+				.on('change', '#enable-actions', function(e){ //OSCAR - to toggle the actions lists
 					if( this.checked ){
 						$('.action-list').slideDown();
 						
@@ -2284,15 +2284,15 @@ var I18N = {},
 						self.scene.setTimelineActions([]);
 					}
 				})
-				.on('change', '#actions-cycles', function(e){ //OSCACA - to convert cycles to seconds
+				.on('change', '#actions-cycles', function(e){ //OSCAR - to convert cycles to seconds
 					$('#actions-seconds').val( self.convertCyclesToSeconds( $(this).val() ) );
 					self.updateSceneActions();
 				})
-				.on('change', '#actions-seconds', function(e){ //OSCACA - to convert cycles to seconds
+				.on('change', '#actions-seconds', function(e){ //OSCAR - to convert cycles to seconds
 					$('#actions-cycles').val( self.convertSecondsToCycles( $(this).val() ) );
 					self.updateSceneActions();
 				})
-				.on('change', '.action-list input[name="endaction"]', function(e){ //OSCACA - to convert cycles to seconds
+				.on('change', '.action-list input[name="endaction"]', function(e){ //OSCAR - to convert cycles to seconds
 					self.updateSceneActions();
 				});
 				
