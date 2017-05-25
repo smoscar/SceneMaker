@@ -83,7 +83,7 @@ function SceneMaker(params) {
 	};
 	
 	SceneMaker.prototype.reset = function() {
-		svgParams = {"autoplay": autoplay};
+		var svgParams = {"autoplay": autoplay};
 		if (typeof(instance.element) != "undefined"){
 			svgParams.elementId = instance.element;
 		}
@@ -99,7 +99,108 @@ function SceneMaker(params) {
 	};
 	
 	SceneMaker.prototype.getTimelineActions = function() {
-		return [];
+		var mainTimeline = this.svg.mc.m_timeline,
+			reg = /\/\*CELL-ACTIONS-[^\*]+\*\//g,
+			frameIndex = 0,
+			commandIndex = 0
+			actionsFound = [];
+				
+		if( typeof( mainTimeline ) !== "undefined" && typeof( mainTimeline.Frame ) !== "undefined") {
+							
+			while ( frameIndex < mainTimeline.Frame.length ) {
+		
+				while ( commandIndex < mainTimeline.Frame[frameIndex].Command.length ) {
+							
+					if ( 
+						mainTimeline.Frame[frameIndex].Command[commandIndex].cmdType == "AddFrameScript" &&
+						typeof( mainTimeline.Frame[frameIndex].Command[commandIndex].script ) !== "undefined" &&
+						mainTimeline.Frame[frameIndex].Command[commandIndex].script.indexOf('/*CELL-ACTIONS-') === 0
+					) {
+						var paramsArray = reg.exec( mainTimeline.Frame[frameIndex].Command[commandIndex].script );
+						
+						if ( paramsArray.length > 0 ) {
+							actionsFound.push( paramsArray[0].replace('/*CELL-ACTIONS-','').replace('*/','').split('-') )
+						}
+					}
+					commandIndex++;
+				}
+						
+				commandIndex = 0;
+				frameIndex++;
+			}
+		}
+		return actionsFound;
+	};
+	
+	SceneMaker.prototype.setTimelineActions = function( actionsParams ) {
+		actionsParams = typeof(actionsParams) == typeof([]) ? actionsParams : [];
+		
+		var mainTimeline = this.svg.mc.m_timeline,
+			reg = /\/\*CELL-ACTIONS-[^\*]+\*\//g,
+			scriptParams = actionsParams.join('-'),
+			scriptTag = "/*CELL-ACTIONS-",
+			script = '',
+			frameIndex = 0,
+			commandIndex = 0
+			actionsFound = [],
+			scriptReplaced = false,
+			scriptID = 0;
+		
+		if ( typeof( actionsParams[2] ) !== "undefined" ) {
+			switch (actionsParams[2]) {
+				case "0":
+					script = "/*CELL-ACTIONS-"+scriptParams+'*/';
+					break;
+				case "1":
+					script = "/*CELL-ACTIONS-"+scriptParams+"*/ console.log('SHOULD STOP EVERYTHING');";
+					break;
+				case "2":
+					script = "/*CELL-ACTIONS-"+scriptParams+"*/ if (typeof window.slideCellCount == 'undefined'){window.slideCellCount = 1;} else if ( window.slideCellCount == "+ actionsParams[1] +" ) { if (typeof slidedeck !== 'undefined'){ slidedeck.nextSlide(); } window.slideCellCount = 0;}; window.slideCellCount++;";
+					break;
+			}
+			reg = RegExp("\\/\\*CELL-ACTIONS-" + actionsParams[0] + "[^\\*]+\\*\\/", "g");
+		}
+		
+		if( typeof( mainTimeline ) !== "undefined" && typeof( mainTimeline.Frame ) !== "undefined") {
+							
+			while ( frameIndex < mainTimeline.Frame.length ) {
+		
+				while ( commandIndex < mainTimeline.Frame[frameIndex].Command.length ) {
+							
+					if ( 
+						mainTimeline.Frame[frameIndex].Command[commandIndex].cmdType == "AddFrameScript" &&
+						typeof( mainTimeline.Frame[frameIndex].Command[commandIndex].script ) !== "undefined"
+					) {
+						if ( !!mainTimeline.Frame[frameIndex].Command[commandIndex].script.match( reg ) ) {
+							mainTimeline.Frame[frameIndex].Command[commandIndex].script = script;
+							scriptReplaced = true;
+						}
+						scriptID = ( parseInt(mainTimeline.Frame[frameIndex].Command[commandIndex].scriptId) >= scriptID ? ( parseInt(mainTimeline.Frame[frameIndex].Command[commandIndex].scriptId) + 1 ) :  scriptID );
+					}
+					commandIndex++;
+				}
+						
+				commandIndex = 0;
+				frameIndex++;
+			}
+		}
+		
+		if ( !scriptReplaced && script != "" ){
+			mainTimeline.Frame[0].Command.push({
+                "cmdType": "AddFrameScript", 
+                "script": script, 
+                "scriptId": scriptID+""
+            })
+            
+            if ( typeof( mainTimeline.Frame[1] ) !== "undefined" ) {
+            	mainTimeline.Frame[1] = {"Command": [], "num": "1"};
+            }
+            
+            mainTimeline.Frame[1].Command.push({
+                "cmdType": "RemoveFrameScript", 
+                "scriptId": scriptID+""
+            });
+		}
 	};
 	
 	SceneMaker.prototype.getObjectColors = function(id, first) {

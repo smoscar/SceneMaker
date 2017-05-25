@@ -14250,6 +14250,11 @@
                 "blendMode": "Normal", 
                 "cmdType": "UpdateBlendMode", 
                 "objectId": "1"
+              },
+              {
+                "cmdType": "AddFrameScript", 
+                "script": "/*CELL-ACTIONS-0-2-2*/ if (typeof window.slide1cell1count == 'undefined'){window.slide1cell1count = 1;} else if ( window.slide1cell1count == 2 ) { if (typeof slidedeck !== 'undefined'){ slidedeck.nextSlide(); } window.slide1cell1count = 0;}; window.slide1cell1count++;", 
+                "scriptId": "0"
               }
             ], 
             "num": "0"
@@ -14257,21 +14262,12 @@
           {
             "Command": [
               {
-                "cmdType": "AddFrameScript", 
-                "script": "console.log('HEl'); if (typeof window.slide1cell1count == 'undefined'){window.slide1cell1count = 1;} else if ( window.slide1cell1count == 3 ) { if (typeof slidedeck !== 'undefined'){ slidedeck.nextSlide();} console.log('HELLO');}; window.slide1cell1count++;", 
-                "scriptId": "0"
-              }
-            ], 
-            "num": "1"
-          },
-          {
-            "Command": [ 
-              {
                 "cmdType": "RemoveFrameScript", 
                 "scriptId": "0"
               }
+              
             ], 
-            "num": "2"
+            "num": "1"
           }
         ], 
         "frameCount": "34"

@@ -1249,31 +1249,41 @@ var I18N = {},
 			}
 			// ANIMATION ACTIONS OSCACA - to show the SVG JSON object code
 			if (layerData.svgJSON && layerData.svgJSON.length > 0) {
-				var output = [
+				var actions = {},
+					output = [];
+				
+				$(layerData.actions).each(function(n){
+					var arrayCopy = JSON.parse( JSON.stringify(this) ),
+						actionIndex = arrayCopy.splice(0,1)[0];
+						
+					actions[actionIndex] = arrayCopy;
+				});
+				
+				output.push(
 						'<div class="item">',
 							'<div class="item" data-label="' +_('Enable') + ':">',
-								'<div class="slidebox"><input id="enable-actions" type="checkbox" name="enable-actions"><label for="enable-actions"></label></div>',
+								'<div class="slidebox"><input id="enable-actions" type="checkbox" name="enable-actions"' + (layerData.actions.length > 0 ? ' checked="checked"' : '') + '><label for="enable-actions"></label></div>',
 							'</div>',
 						'</div>',
-						'<div class="action-list items-group" style="display:none">',
+						'<div class="action-list items-group"' + (typeof(actions[0]) == "undefined" ? ' style="display:none"' : '') + '>',
 							'<h4>' +_('When animation ends') + '</h4>',
 							'<div class="item" data-label="' +_('After') + ':">',
-								'<label data-label="' +_('Cycles') + '"><input id="actions-cycles" type="text" class="item-number-editable" value="1"></label>',
-								'<label></label>',
+								'<label data-label="' +_('Cycles') + '"><input id="actions-cycles" type="text" class="item-number-editable" value="' + ( typeof(actions[0]) != "undefined" ? actions[0][0] : 1 ) + '"></label>',
+								'<label data-label="' +_('Seconds') + '"><input id="actions-seconds" type="text" class="item-number-editable" value="' + ( typeof(actions[0]) != "undefined" ? self.convertCyclesToSeconds( actions[0][0] ) : self.convertCyclesToSeconds( 1 ) ) + '"></label>',
 							'</div>',
 							'<div class="item">',
-								'<label class="action"><input type="radio" name="page" value="all" checked="checked"><span>Repeat the animation</span></label>',
+								'<label class="action"><input type="radio" name="endaction" value="0"' + ( typeof(actions[0]) != "undefined" && actions[0][1] == 0 ? ' checked="checked"' : '' ) + '><span>Repeat the animation</span></label>',
 							'</div>',
 							'<div class="item">',
-								'<label class="action"><input type="radio" name="page" value="16337C62-3CA4-4665-A407-A9565453CC0E"><span>Stop the animation</span></label>',
+								'<label class="action"><input type="radio" name="endaction" value="1"' + ( typeof(actions[0]) != "undefined" && actions[0][1] == 1 ? ' checked="checked"' : '' ) + '><span>Stop the animation</span></label>',
 							'</div>',
 							'<div class="item">',
-								'<label class="action"><input type="radio" name="page" value="16337C62-3CA4-4665-A407-A9565453CC01"><span>Go to the next cell</span></label>',
+								'<label class="action"><input type="radio" name="endaction" value="2"' + ( typeof(actions[0]) != "undefined" && actions[0][1] == 2 ? ' checked="checked"' : '' ) + '><span>Go to the next cell</span></label>',
 							'</div>',
 						'</div>',
-				].join('');
+				);
 				
-				html.push(this.propertyType('CELL ACTIONS', [ output ].join('')));
+				html.push(this.propertyType('CELL ACTIONS', output.join('')));
 			}
 			// CODE TEMPLATE
 			if(layerData.css && layerData.css.length > 0){
@@ -1586,6 +1596,21 @@ var I18N = {},
 					.toUpperCase();
 			}
 			return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+		},
+		convertCyclesToSeconds: function( cycles ) { //OSCACA - to convert number of cycles to approx seconds
+			var totalFrames = parseInt( this.scene.svg.mc.m_frameCount ) * cycles;
+			
+			return Math.floor( totalFrames / this.current.fps * 10 ) / 10;
+		},
+		convertSecondsToCycles: function( seconds ) { //OSCACA - to convert number of cycles to approx seconds
+			var totalFrames = parseInt( this.scene.svg.mc.m_frameCount );
+			
+			return Math.ceil( ( seconds * this.current.fps ) / totalFrames );
+		},
+		updateSceneActions: function() { //OSCACA - function that updates the scene's actions
+			this.scene.setTimelineActions( ["0", $('#actions-cycles').val(), $('.action-list input[name="endaction"]:checked').val() ] );
+			
+			this.current.layers[0].actions = this.scene.getTimelineActions();
 		},
 		onDragStart: function(event) { //OSCAR - to pass the drag event to the SVG appropriately
 			var oe = event.originalEvent,
@@ -2247,10 +2272,25 @@ var I18N = {},
 				.on('change', '#enable-actions', function(e){ //OSCACA - to toggle the actions lists
 					if( this.checked ){
 						$('.action-list').slideDown();
+						
+						self.updateSceneActions();
 					}
 					else{
 						$('.action-list').slideUp();
+						
+						self.scene.setTimelineActions([]);
 					}
+				})
+				.on('change', '#actions-cycles', function(e){ //OSCACA - to convert cycles to seconds
+					$('#actions-seconds').val( self.convertCyclesToSeconds( $(this).val() ) );
+					self.updateSceneActions();
+				})
+				.on('change', '#actions-seconds', function(e){ //OSCACA - to convert cycles to seconds
+					$('#actions-cycles').val( self.convertSecondsToCycles( $(this).val() ) );
+					self.updateSceneActions();
+				})
+				.on('change', '.action-list input[name="endaction"]', function(e){ //OSCACA - to convert cycles to seconds
+					self.updateSceneActions();
 				});
 				
 			// tab
