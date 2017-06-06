@@ -1782,7 +1782,7 @@ var I18N = {},
 								type: 'POST',
 								dataType: "json",
 								url: ajaxurl,
-								data:  { "action": "save_jondo_cells", "scene_id": scene_id, "cells_data": self.project.cells },
+								data:  { "action": "save_jondo_cells", "scene_id": scene_id, "cells_data": JSON.stringify( { "cells": self.project.cells } ) },
 								success: function(data){
 									save_alert.fadeOut('fast');
 									$(_this).blur();
