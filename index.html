@@ -1786,6 +1786,12 @@ var I18N = {},
 								success: function(data){
 									save_alert.fadeOut('fast');
 									$(_this).blur();
+									
+									if ( typeof(data.response) != "undefined" ) {
+										$( self.project.cells ).each(function(n) {
+											this.assetPath = data.response[n];
+										});
+									}
 								},
 								error: function (request, status, error) {
 									save_alert.fadeOut('fast');
