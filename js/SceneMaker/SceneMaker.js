@@ -74,6 +74,10 @@ function SceneMaker(params) {
 		if (typeof(cell) == typeof('')) {
 			removeObjectFromScene(cell);
 			
+			if ( typeof( starter_pos[cell] ) != "undefined" ){
+				delete starter_pos[cell];
+			}
+			
 			_this.reset();
 			
 			if (typeof(callback) == typeof(Function)) {
