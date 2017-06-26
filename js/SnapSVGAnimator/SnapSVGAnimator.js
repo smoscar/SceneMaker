@@ -325,10 +325,8 @@ var Text = function (parentMC,resourceManager,charId,ObjectId,placeAfter,transfo
                 i += 1;
             }
 
-            if (i >= data.txt.length) {
-            	if (typeof(newIndex) == "undefined"){            	
-            		newIndex = chars.length
-            	}
+            if (i >= data.txt.length) {         	
+            	newIndex = chars.length
                 substr = chars.slice(0, newIndex);
                 spans.push(substr);
                 i = -1;
@@ -1522,7 +1520,7 @@ var ResourceManager = function (data) {
         }
     }
 
-    //console.log(this.m_data.DOMDocument);
+    console.log(this.m_data.DOMDocument);
 };
 
 //Member functions
@@ -1561,7 +1559,7 @@ function SVGAnim(data, w, h, fps, params) {
     instance.version = '1.2.3';
 
     msg = 'Snap.svg Animator v' + instance.version;
-    //console.log("%c" + msg, "color:" + color + ";font-weight:bold;");
+    console.log("%c" + msg, "color:" + color + ";font-weight:bold;");
 
     params = params || {};
     fps = fps || 24;
