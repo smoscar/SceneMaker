@@ -276,6 +276,7 @@ header .tab li.current:after{bottom:0px;}
 .cell-list .asset-list li.cell-edit.delete div h3:hover:before{background-position: -38px -40px;}
 .cell-list .asset-list li.cell-edit.rearrange div h3:before{background-position: -5px -69px;}
 .cell-list .asset-list li.cell-edit.rearrange div h3:hover:before{background-position: -38px -69px;}
+.cell-list .asset-list li.cell-edit.duplicate div h3:before{background-size: 60px 28px; background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAABVCAYAAADg1c4VAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAqNJREFUeNrs3cFqE1EUgOGpZFOQ0mXFtfQJhD5AEXRZn0ACrty4E7JWfAaxuHfRrSB5AvsCintbcFNSwWU86lBaUJJJMvfemfk+OLtmxuT8Sr1NdGs+n1fQF1uCRtAgaBA0CBpBg6BB0CBoEDSCBkGDoEHQIGgEDYIGQYOgQdAIGgQNgobCg34yfpr8ybw7fmOjDd1/+XOtx59Otot6PqME97gX8zrmMGZng9edxUxjXsR8lebSAW90H9d+Q1ztIyLPto9bLV9/P+ZTzNGGY67q6x3V19+X6lLxJdlHfZ9eBv0qZrfle+zW98E+Wg/6MNHzeKBV+0gR9E6i53Fbq/aRImhIapTpvu9jnsd8s4IirLyPIR7b/cuzmO+bvuiis2/n1Gn3MaSgr794zqnzW3kfDX4wk+ScOvf30M6py9L5c+rcQTunLkvn95E7aOfUZen8PnIH7Zy6LJ3fh3NoemVU6K/rQ8w45qzBY+7EHMc8tNZ0+/jfOXT8xS/LPkr9E7ppzFX99WPtlbGPCD3LPkoN+izx42jhda2jFjQIGgSNoEHQIGgoLuiZl7goM0GvZ6qhokwFvZ5JzIWOitH7fbQd9OeYg5iTmEs95XU62e79PlK8OelLzOOGj/n9xpZVfmy6J9uFUd/Yx5IfoVppH3Htvd4EvegDqQs+0Pq2+vvGlvMGt7wb41OwzQOvloj7zz7ia88bxJxlH6W+ffRR5Y1Gxe1j3X+ptA/fQ8Oggk51LvrDqoexj9xBpzoX/ajVYewjd9ApzkUv6vswgH3kDrrNc9HL+roH9X1YoOVz6qt91PdpRQmnHKucU9Ne1J3eh/8Fi14RNIIGQYOgQdAIGgQNggZBg6ARNAgaBA2CBkEjaBA0CBoEDYJG0CBoEDRsyC8BBgCq4i6fdJp5VAAAAABJRU5ErkJggg==);}
 .empty{position:absolute;top:30%;left:0;right:0;transform:translateY(-50%);vertical-align:middle;text-align:center;}
 .message{position:absolute;top:50%;left:50%;padding:10px 20px;max-width:320px;transform:translateX(-50%) translateY(-50%);text-align:center;border-radius:4px;background:rgba(0,0,0,.96);border: 1px solid rgba(255,255,255,.16);color:#FFF;box-shadow:0 2px 10px rgba(0,0,0,.32);z-index:9;display:none;}
 .message.alert{background:#FFFFFF;color:#000000;max-width: 380px;padding-bottom: 20px;}
@@ -694,6 +695,11 @@ var I18N = {},
 											'<h3>' + _('Delete Cell') + '</h3>'+
 										'</div>'+
 									'</li>' : ''),
+									'<li class="cell-edit duplicate" data-index="new">',
+										'<div>',
+											'<h3>' + _('Duplicate') + '</h3>',
+										'</div>',
+									'</li>',
 									'<li class="cell-edit rearrange" data-index="new">',
 										'<div>',
 											'<h3>' + _('Rearrange') + '</h3>',
@@ -2033,6 +2039,25 @@ var I18N = {},
 								$('#cells #cell-0').trigger('click');
 							}
 					});
+				})
+				.on('click', '.cell-edit.duplicate', function( event ){
+					event.stopPropagation();
+					var newCell = JSON.parse( JSON.stringify( self.project.cells[self.cellIndex] ) ),
+						newCellIndex = self.project.cells.length;
+							
+					newCell.objectID = self.createGUID();
+					newCell.name = "Copy of " + self.project.cells[self.cellIndex].name;
+					newCell.layers[0].name = "Copy of " + self.project.cells[self.cellIndex].name;
+					newCell.layers[0].objectID = self.createGUID();
+							
+					self.project.cells.push(newCell);
+					self.cells();
+							
+					if ($('#cells #cell-'+ (parseInt(newCellIndex))).length > 0){
+						$('#cells #cell-'+ (parseInt(newCellIndex))).trigger('click');
+						$('#cells #cell-'+ (parseInt(newCellIndex)) + ' .cell-edit.rename').trigger('click');
+					}
+
 				})
 				.on('blur', 'input.cell-name', function( event ){
 					var cell = $(this).closest('.cell'),
