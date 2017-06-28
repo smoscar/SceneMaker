@@ -2049,6 +2049,7 @@ var I18N = {},
 					newCell.name = "Copy of " + self.project.cells[self.cellIndex].name;
 					newCell.layers[0].name = "Copy of " + self.project.cells[self.cellIndex].name;
 					newCell.layers[0].objectID = self.createGUID();
+					delete newCell.assetPath;
 							
 					self.project.cells.push(newCell);
 					self.cells();
