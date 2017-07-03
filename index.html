@@ -1848,6 +1848,21 @@ var I18N = {},
 						event.preventDefault();
 						return false;
 					}
+					else if((event.ctrlKey || event.metaKey) && (event.which == 67 || event.which == 86 || event.which == 88)) { //OSCACA - To add support for copy and paste
+						if(typeof(self.selectedIndex) !== "undefined" && event.which == 67){
+							console.log("copy");
+							self.clipboard = {"layer": self.current.layers[self.selectedIndex]};
+							self.clipboard.svg = self.scene.getObjectCopy( self.selectedIndex );
+						}
+						else if(typeof(self.selectedIndex) !== "undefined" && event.which == 88){
+							console.log("cut");
+							self.clipboard = {"layer": self.current.layers[self.selectedIndex]};
+							self.clipboard.svg = self.scene.getObjectCopy( self.selectedIndex );
+						}
+						else if(event.which == 86){
+							console.log("paste");
+						}
+					}
 					else if(event.which == 32 ){
 						if ( !$(event.target).is(".allow_space_press") ){
 							$('#cursor').show();
@@ -2441,6 +2456,7 @@ var I18N = {},
 		this.artboardIndex = (!isNaN(path.artboard))? path.artboard: 0;
 		this.cellIndex = (!isNaN(path.cell) && typeof(this.project.cells[path.cell])!=="undefined")? path.cell: 0; //OSCAR - contains the index of the current cell
 		this.current = this.project.cells[this.cellIndex]; //OSCAR this.project.screen; //OSCAR this.project.artboards[this.artboardIndex];
+		this.clipboard = null; //OSCACA - to support copy and paste
 		var proportion = $(document).height() / this.current.height;
 		if (proportion >= .8) {
 			this.configs.zoom = 1;

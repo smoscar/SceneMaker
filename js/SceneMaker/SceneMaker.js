@@ -207,6 +207,17 @@ function SceneMaker(params) {
 		}
 	};
 	
+	SceneMaker.prototype.getObjectCopy = function( objectID ) {
+		isItChar = typeof(isItChar) !== typeof(true) ? false : isItChar;
+		output = JSON.parse( JSON.stringify( mainMC ) );
+		
+		debugger
+		
+		removeObjectFromScene( objectID, false, true, output);
+		
+		return output;
+	};
+	
 	SceneMaker.prototype.getObjectColors = function(id, first) {
 		var movieClip = typeof(id) == typeof("") || typeof(id) == typeof(0) ? getMovieClipById(id) : id,
 			chars = {};
@@ -705,22 +716,42 @@ function SceneMaker(params) {
 			
 		}
 	}
-	
-	function removeObjectFromScene(objectID, isItChar){ //TODO - allow deletion of elements not wrapped in MovieClips
+
+	function removeObjectFromScene(objectID, isItChar, reverseMode, mainObject){ //TODO - allow deletion of elements not wrapped in MovieClips, 2. Update the frame count when needed
 		isItChar = typeof(isItChar) !== typeof(true) ? false : isItChar;
-		
-		if ( typeof(mainMC) == "undefined" ) {
+		reverseMode = typeof(reverseMode) !== typeof(true) ? true : reverseMode;
+		mainObject = typeof(mainObject) == "undefined" ? mainMC  : mainObject;
+
+		if ( typeof(mainObject) == "undefined" ) {
 			return;
 		} else {
 			
-			if(mainMC.DOMDocument.Timeline == undefined) {
+			if(mainObject.DOMDocument.Timeline == undefined) {
 				debugger;
 			}
 			else {
-				
-				var mainTimeline = ( !isItChar ? instance.svg.mc.m_timeline : instance.svg.resourceManager.getMovieClip( objectID ) );
+
+				var mainTimeline;
 				var frameIndex = 0;
 				var commandIndex = 0;
+				
+				//If we need the main timeline
+				if ( !isItChar ){
+					for (i = mainObject.DOMDocument.Timeline.length - 1; i > -1; i -= 1) {
+						if (typeof(mainObject.DOMDocument.Timeline[i].linkageName) == 'undefined') {
+							mainTimeline = mainObject.DOMDocument.Timeline[i];
+							break;
+						}
+					}
+				}
+				//If we need a secondary timeline
+				else {
+					for(var movieClipIndex =0; movieClipIndex < mainObject.DOMDocument.Timeline.length - 1; movieClipIndex++) {
+						if (objectID == mainObject.DOMDocument.Timeline[movieClipIndex].charid) {
+							mainTimeline = mainObject.DOMDocument.Timeline[movieClipIndex];
+						}
+					}
+				}
 				
 				//If the object is a MovieClip
 				if( typeof( mainTimeline ) !== "undefined" && typeof( mainTimeline.Frame ) !== "undefined") {
@@ -732,30 +763,35 @@ function SceneMaker(params) {
 							if ( isItChar ){
 								
 								if ( mainTimeline.Frame[frameIndex].Command[commandIndex].cmdType == "Place" ) {
-									removeObjectFromScene( mainTimeline.Frame[frameIndex].Command[commandIndex].charid, true );
+									removeObjectFromScene( mainTimeline.Frame[frameIndex].Command[commandIndex].charid, true, false, mainObject );
 								}
 								commandIndex++;
 							}
-							else if( mainTimeline.Frame[frameIndex].Command[commandIndex].objectId == objectID ) {
+							else if( 
+								( !reverseMode && mainTimeline.Frame[frameIndex].Command[commandIndex].objectId == objectID ) ||
+								( reverseMode && mainTimeline.Frame[frameIndex].Command[commandIndex].objectId != objectID )
+							) {
 							
 								if ( mainTimeline.Frame[frameIndex].Command[commandIndex].cmdType == "Place" ) {
 								
-									removeObjectFromScene( mainTimeline.Frame[frameIndex].Command[commandIndex].charid, true );
+									removeObjectFromScene( mainTimeline.Frame[frameIndex].Command[commandIndex].charid, true, false, mainObject );
 								}
 								mainTimeline.Frame[frameIndex].Command.splice( commandIndex, 1 );
 							}
 							else {
 								//Take care of normalizing the IDs
-								var currentId = parseInt( mainTimeline.Frame[frameIndex].Command[commandIndex].objectId );
-								if ( currentId >= parseInt( objectID ) ){
-									mainTimeline.Frame[frameIndex].Command[commandIndex].objectId = (currentId - 1)+"";
-								}
+								if (!reverseMode){
+									var currentId = parseInt( mainTimeline.Frame[frameIndex].Command[commandIndex].objectId ); //OSCACA when reversed this should be different
+									if ( currentId >= parseInt( objectID ) ){
+										mainTimeline.Frame[frameIndex].Command[commandIndex].objectId = (currentId - 1)+"";
+									}
 								
-								if ( typeof( mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter ) !== "undefined" ){
-
-									var placeAfter = parseInt( mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter );
-									if ( placeAfter >= parseInt( objectID ) ) {
-										mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter = (placeAfter - 1)+"";
+									if ( typeof( mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter ) !== "undefined" ){
+	
+										var placeAfter = parseInt( mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter );
+										if ( placeAfter >= parseInt( objectID ) ) {
+											mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter = (placeAfter - 1)+"";
+										}
 									}
 								}
 								commandIndex++;
@@ -768,34 +804,46 @@ function SceneMaker(params) {
 					
 					if ( isItChar ){
 
-						var indexMc = mainMC.DOMDocument.Timeline.indexOf( mainTimeline );
+						var indexMc = mainObject.DOMDocument.Timeline.indexOf( mainTimeline );
 						if ( indexMc > -1) {
-							mainMC.DOMDocument.Timeline.splice( indexMc, 1 );
+							mainObject.DOMDocument.Timeline.splice( indexMc, 1 );
 						}
 					}
 				}
 				//If the object is a graphic, text or bitmap
 				else {
-					var graphicObject = instance.svg.resourceManager.getShape(objectID);
+					var graphicObject;// = instance.svg.resourceManager.getShape(objectID);
+					
+					for(var shapeIndex =0; shapeIndex < mainObject.DOMDocument.Shape.length; shapeIndex++) {
+						if (objectID == mainObject.DOMDocument.Shape[shapeIndex].charid) {
+							graphicObject = mainObject.DOMDocument.Shape[shapeIndex];
+						}
+					}
 
 					//If the object is a Graphic
 					if( typeof( graphicObject ) !== "undefined") {
 						
-						var indexGp = mainMC.DOMDocument.Shape.indexOf( graphicObject );
+						var indexGp = mainObject.DOMDocument.Shape.indexOf( graphicObject );
 						if ( indexGp > -1) {
-							mainMC.DOMDocument.Shape.splice( indexGp, 1 );
+							mainObject.DOMDocument.Shape.splice( indexGp, 1 );
 						}
 					}
 					//If the object is a text or bitmap
 					else {
-						var textObject = instance.svg.resourceManager.getText(objectID);
+						var textObject;// = instance.svg.resourceManager.getText(objectID);
 						
+						for(var textIndex =0; textIndex < mainObject.DOMDocument.Text.length; textIndex++) {
+							if (objectID == mainObject.DOMDocument.Text[textIndex].charid) {
+								graphicObject = mainObject.DOMDocument.Text[textIndex];
+							}
+						}
+    
 						//If the object is a Text
 						if( typeof( textObject ) !== "undefined") {
 						
-							var indexTx = mainMC.DOMDocument.Text.indexOf( textObject );
+							var indexTx = mainObject.DOMDocument.Text.indexOf( textObject );
 							if ( indexTx > -1) {
-								mainMC.DOMDocument.Text.splice( indexTx, 1 );
+								mainObject.DOMDocument.Text.splice( indexTx, 1 );
 							}
 						}
 					}
