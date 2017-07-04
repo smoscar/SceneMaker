@@ -1850,17 +1850,37 @@ var I18N = {},
 					}
 					else if((event.ctrlKey || event.metaKey) && (event.which == 67 || event.which == 86 || event.which == 88)) { //OSCACA - To add support for copy and paste
 						if(typeof(self.selectedIndex) !== "undefined" && event.which == 67){
-							console.log("copy");
-							self.clipboard = {"layer": self.current.layers[self.selectedIndex]};
-							self.clipboard.svg = self.scene.getObjectCopy( self.selectedIndex );
+							self.clipboard = {"layer": JSON.parse( JSON.stringify( self.current.layers[self.selectedIndex] ) ) };
+							self.clipboard.svg = self.scene.copyObject( self.selectedIndex );
 						}
 						else if(typeof(self.selectedIndex) !== "undefined" && event.which == 88){
-							console.log("cut");
-							self.clipboard = {"layer": self.current.layers[self.selectedIndex]};
-							self.clipboard.svg = self.scene.getObjectCopy( self.selectedIndex );
+							self.clipboard = {"layer": JSON.parse( JSON.stringify( self.current.layers[self.selectedIndex] ) ) };
+							self.clipboard.svg = self.scene.copyObject( self.selectedIndex );
+							
+							self.scene.removeCellFromScene(self.selectedIndex, function(mainObject){
+							
+								self.current.layers.splice( self.selectedIndex, 1 );
+								
+								self.cells(); //OSCAR - to remove it from the cells assets lists
+								self.layers();
+								$('body').trigger('click');
+							
+							});
 						}
 						else if(event.which == 86){
-							console.log("paste");
+							if (self.clipboard) {
+								self.clipboard.layer.objectID = self.createGUID();
+								self.current.layers.push(self.clipboard.layer);
+								var mainObject = self.scene.pasteObject( self.clipboard.svg );
+							
+								self.current.layers[0].svgJSON = [mainObject];
+								self.current.layers[0].actions = self.scene.getTimelineActions();
+							
+								self.cells();
+								self.layers();
+								$('body').trigger('click');
+								self.clipboard = null;
+							}
 						}
 					}
 					else if(event.which == 32 ){

@@ -207,15 +207,58 @@ function SceneMaker(params) {
 		}
 	};
 	
-	SceneMaker.prototype.getObjectCopy = function( objectID ) {
+	SceneMaker.prototype.copyObject = function( objectID ) { //TODO - allow multiple elements copy ()
 		isItChar = typeof(isItChar) !== typeof(true) ? false : isItChar;
 		output = JSON.parse( JSON.stringify( mainMC ) );
 		
-		debugger
-		
 		removeObjectFromScene( objectID, false, true, output);
 		
+		//The objectIds are reset
+		for (i = output.DOMDocument.Timeline.length - 1; i > -1; i -= 1) {
+			if (typeof(output.DOMDocument.Timeline[i].linkageName) == 'undefined') {
+			
+				ids = [];
+				counter = 1;
+			
+				if(output.DOMDocument.Timeline[i].Frame !== undefined) {
+				
+					for(var frameIndex =0; frameIndex < output.DOMDocument.Timeline[i].Frame.length; frameIndex++) {
+				
+						if(output.DOMDocument.Timeline[i].Frame[frameIndex].Command !== undefined) {
+						
+							for(var commandIndex =0; commandIndex < output.DOMDocument.Timeline[i].Frame[frameIndex].Command.length; commandIndex++) {
+						
+								if(output.DOMDocument.Timeline[i].Frame[frameIndex].Command[commandIndex].objectId !== undefined) {
+										
+									tempID = parseInt(output.DOMDocument.Timeline[i].Frame[frameIndex].Command[commandIndex].objectId);
+									if ( typeof( ids[tempID] ) == "undefined" ){
+										ids[tempID] =  counter+"";
+										counter++;
+									}
+									output.DOMDocument.Timeline[i].Frame[frameIndex].Command[commandIndex].objectId = ids[tempID];
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+		}
+		
 		return output;
+	};
+	
+	SceneMaker.prototype.pasteObject = function( jsonObject ) {
+		cells.push({
+			"name": "Pasted",
+			"orig": JSON.parse(JSON.stringify(jsonObject))
+		});
+		prepareJSON(jsonObject);
+		mergeCellToScene(jsonObject);
+				
+		instance.reset();
+		
+		return this.svg.resourceManager.m_data;
 	};
 	
 	SceneMaker.prototype.getObjectColors = function(id, first) {
@@ -719,7 +762,7 @@ function SceneMaker(params) {
 
 	function removeObjectFromScene(objectID, isItChar, reverseMode, mainObject){ //TODO - allow deletion of elements not wrapped in MovieClips, 2. Update the frame count when needed
 		isItChar = typeof(isItChar) !== typeof(true) ? false : isItChar;
-		reverseMode = typeof(reverseMode) !== typeof(true) ? true : reverseMode;
+		reverseMode = typeof(reverseMode) !== typeof(true) ? false : reverseMode;
 		mainObject = typeof(mainObject) == "undefined" ? mainMC  : mainObject;
 
 		if ( typeof(mainObject) == "undefined" ) {
@@ -781,7 +824,7 @@ function SceneMaker(params) {
 							else {
 								//Take care of normalizing the IDs
 								if (!reverseMode){
-									var currentId = parseInt( mainTimeline.Frame[frameIndex].Command[commandIndex].objectId ); //OSCACA when reversed this should be different
+									var currentId = parseInt( mainTimeline.Frame[frameIndex].Command[commandIndex].objectId );
 									if ( currentId >= parseInt( objectID ) ){
 										mainTimeline.Frame[frameIndex].Command[commandIndex].objectId = (currentId - 1)+"";
 									}
@@ -792,6 +835,11 @@ function SceneMaker(params) {
 										if ( placeAfter >= parseInt( objectID ) ) {
 											mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter = (placeAfter - 1)+"";
 										}
+									}
+								}
+								else {
+									if ( !isItChar && typeof( mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter ) !== "undefined" ){
+										mainTimeline.Frame[frameIndex].Command[commandIndex].placeAfter = "0";
 									}
 								}
 								commandIndex++;
@@ -834,7 +882,7 @@ function SceneMaker(params) {
 						
 						for(var textIndex =0; textIndex < mainObject.DOMDocument.Text.length; textIndex++) {
 							if (objectID == mainObject.DOMDocument.Text[textIndex].charid) {
-								graphicObject = mainObject.DOMDocument.Text[textIndex];
+								textObject = mainObject.DOMDocument.Text[textIndex];
 							}
 						}
     
