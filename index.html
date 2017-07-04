@@ -1848,27 +1848,31 @@ var I18N = {},
 						event.preventDefault();
 						return false;
 					}
-					else if((event.ctrlKey || event.metaKey) && (event.which == 67 || event.which == 86 || event.which == 88)) { //OSCACA - To add support for copy and paste
+					else if((event.ctrlKey || event.metaKey) && (event.which == 67 || event.which == 86 || event.which == 88)) { //OSCAR - To add support for copy and paste
 						if(typeof(self.selectedIndex) !== "undefined" && event.which == 67){
-							self.clipboard = {"layer": JSON.parse( JSON.stringify( self.current.layers[self.selectedIndex] ) ) };
-							self.clipboard.svg = self.scene.copyObject( self.selectedIndex );
+							if ($('#inspector :focus').length == 0) {
+								self.clipboard = {"layer": JSON.parse( JSON.stringify( self.current.layers[self.selectedIndex] ) ) };
+								self.clipboard.svg = self.scene.copyObject( self.selectedIndex );
+							}
 						}
 						else if(typeof(self.selectedIndex) !== "undefined" && event.which == 88){
-							self.clipboard = {"layer": JSON.parse( JSON.stringify( self.current.layers[self.selectedIndex] ) ) };
-							self.clipboard.svg = self.scene.copyObject( self.selectedIndex );
+							if ($('#inspector :focus').length == 0) {
+								self.clipboard = {"layer": JSON.parse( JSON.stringify( self.current.layers[self.selectedIndex] ) ) };
+								self.clipboard.svg = self.scene.copyObject( self.selectedIndex );
 							
-							self.scene.removeCellFromScene(self.selectedIndex, function(mainObject){
+								self.scene.removeCellFromScene(self.selectedIndex, function(mainObject){
 							
-								self.current.layers.splice( self.selectedIndex, 1 );
+									self.current.layers.splice( self.selectedIndex, 1 );
 								
-								self.cells(); //OSCAR - to remove it from the cells assets lists
-								self.layers();
-								$('body').trigger('click');
+									self.cells();
+									self.layers();
+									$('body').trigger('click');
 							
-							});
+								});
+							}
 						}
 						else if(event.which == 86){
-							if (self.clipboard) {
+							if (self.clipboard && $('#inspector :focus').length == 0) {
 								self.clipboard.layer.objectID = self.createGUID();
 								self.current.layers.push(self.clipboard.layer);
 								var mainObject = self.scene.pasteObject( self.clipboard.svg );
@@ -1881,6 +1885,11 @@ var I18N = {},
 								$('body').trigger('click');
 								self.clipboard = null;
 							}
+						}
+					}
+					else if(event.which == 8) { //OSCAR - to remove objects using hot keys
+						if ($('#inspector :focus').length == 0) {
+							$('#inspector h2:eq(0) > i').trigger('click');
 						}
 					}
 					else if(event.which == 32 ){
@@ -2476,7 +2485,7 @@ var I18N = {},
 		this.artboardIndex = (!isNaN(path.artboard))? path.artboard: 0;
 		this.cellIndex = (!isNaN(path.cell) && typeof(this.project.cells[path.cell])!=="undefined")? path.cell: 0; //OSCAR - contains the index of the current cell
 		this.current = this.project.cells[this.cellIndex]; //OSCAR this.project.screen; //OSCAR this.project.artboards[this.artboardIndex];
-		this.clipboard = null; //OSCACA - to support copy and paste
+		this.clipboard = null; //OSCAR - to support copy and paste
 		var proportion = $(document).height() / this.current.height;
 		if (proportion >= .8) {
 			this.configs.zoom = 1;
