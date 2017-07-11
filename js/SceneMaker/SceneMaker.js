@@ -104,7 +104,7 @@ function SceneMaker(params) {
 	
 	SceneMaker.prototype.getTimelineActions = function() {
 		var mainTimeline = this.svg.mc.m_timeline,
-			reg = /\/\*CELL-ACTIONS-[^\*]+\*\//g,
+			reg = /\/\*CELL-ACTIONS-[^\*]+\*\//,
 			frameIndex = 0,
 			commandIndex = 0
 			actionsFound = [];
