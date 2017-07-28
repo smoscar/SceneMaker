@@ -2043,6 +2043,7 @@ var I18N = {},
 						}
 						else {
 							self.scene.setNewScene( svgJson );
+							$('body').trigger('click');
 						}
 						self.hideDistance();
 						self.screen();
